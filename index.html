@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Otimizador de Cortes</title>
     
+    <!-- Favicon Embutido (Ícone da Aba) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2I4MmY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iNiIgY3k9IjYiIHI9IjMiLz48Y2lyY2xlIGN4PSI2IiBjeT0iMTgiIHI9IjMiLz48bGluZSB4MT0iMjAiIHkxPSI0IiB4Mj0iOC4xMiIgeTI9IjE1Ljg4Ii8+PGxpbmUgeDE9IjE0LjQ3IiB5MT0iMTQuNDgiIHgyPSIyMCIgeTI9IjIwIi8+PGxpbmUgeDE9IjguMTIiIHkxPSI4LjEyIiB4Mj0iMTIiIHkyPSIxMiIvPjwvc3ZnPg==">
+    
     <!-- Tailwind CSS (via CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -40,7 +43,8 @@
             'trash-2': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
             'refresh-cw': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>,
             'scissors': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>,
-            'excel': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+            'excel': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>,
+            'file-text': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
         };
 
         const Icon = ({ name, className }) => {
@@ -58,6 +62,11 @@
 
         function App() {
             // Inicializar estados a partir do localStorage (se existirem)
+            const [planName, setPlanName] = useState(() => {
+                const saved = localStorage.getItem('opt_planName');
+                return saved !== null ? saved : 'Plano de Corte';
+            });
+
             const [standardLength, setStandardLength] = useState(() => {
                 const saved = localStorage.getItem('opt_standardLength');
                 return saved !== null ? Number(saved) : 2000;
@@ -84,6 +93,10 @@
             const [error, setError] = useState('');
 
             // Salvar automaticamente sempre que os dados mudarem
+            useEffect(() => {
+                localStorage.setItem('opt_planName', planName);
+            }, [planName]);
+
             useEffect(() => {
                 localStorage.setItem('opt_standardLength', standardLength);
             }, [standardLength]);
@@ -199,11 +212,27 @@
                 const merges = [];
                 let rowIndex = 0;
 
-                // Cores dos cortes no Excel (Formato RGB hexadecimal sem #)
+                // Cores dos cortes no Excel
                 const cutColors = ["2563EB", "4F46E5", "0891B2", "0284C7"];
-                const wasteColor = "E2E8F0"; // Cinza claro para sobra
+                const wasteColor = "E2E8F0"; 
                 
-                // Agrupar resultados por perfil
+                // Cabeçalho Principal (Nome do Plano)
+                const displayPlanName = planName.trim() || "Plano de Corte";
+                aoa.push([{ 
+                    v: displayPlanName, 
+                    s: { 
+                        font: { bold: true, sz: 18, color: { rgb: "FFFFFF" } }, 
+                        fill: { fgColor: { rgb: "0F172A" } }, 
+                        alignment: { horizontal: "center", vertical: "center" } 
+                    } 
+                }]);
+                merges.push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 100 } });
+                rowIndex++;
+                
+                // Linha vazia
+                aoa.push(new Array(101).fill(""));
+                rowIndex++;
+
                 const grouped = results.reduce((acc, bin) => {
                     if (!acc[bin.profile]) acc[bin.profile] = [];
                     acc[bin.profile].push(bin);
@@ -220,18 +249,15 @@
                     rowIndex++;
 
                     bins.forEach(bin => {
-                        // Uma linha com 101 colunas (1 para o nome, 100 para 100% da barra)
                         const row = new Array(101).fill("");
                         row[0] = { v: `Barra #${bin.id}`, s: { font: { bold: true }, alignment: { vertical: "center" } } };
 
                         let currentPct = 0;
                         
                         bin.cuts.forEach((cut, cutIdx) => {
-                            // Calcula quantos % da barra este corte ocupa (1% = 1 coluna no Excel)
                             let pct = Math.round((cut / standardLength) * 100);
-                            
-                            if (pct === 0 && cut > 0) pct = 1; // Garante que cortes mínimos tenham pelo menos 1 coluna visível
-                            if (currentPct + pct > 100) pct = 100 - currentPct; // Evita ultrapassar o tamanho da barra por arredondamento
+                            if (pct === 0 && cut > 0) pct = 1; 
+                            if (currentPct + pct > 100) pct = 100 - currentPct; 
                             
                             if (pct > 0) {
                                 const colStart = 1 + currentPct;
@@ -247,12 +273,10 @@
                                     }
                                 };
 
-                                // Se o corte for maior que 1%, junta as colunas necessárias para fazer o bloco
                                 if (colStart !== colEnd) {
                                     merges.push({ s: { r: rowIndex, c: colStart }, e: { r: rowIndex, c: colEnd } });
                                 }
 
-                                // Preenche as células do meio com a mesma cor para o Excel não perder o fundo ao fazer merge
                                 for (let i = colStart + 1; i <= colEnd; i++) {
                                     row[i] = { v: "", s: { fill: { fgColor: { rgb: bgColor } } } };
                                 }
@@ -261,7 +285,6 @@
                             }
                         });
 
-                        // Lidar com a Sobra (o resto da barra)
                         const wastePct = 100 - currentPct;
                         if (wastePct > 0) {
                             const colStart = 1 + currentPct;
@@ -288,12 +311,10 @@
                         aoa.push(row);
                         rowIndex++;
                         
-                        // Linha vazia para dar espaçamento no Excel
                         aoa.push(new Array(101).fill(""));
                         rowIndex++;
                     });
                     
-                    // Espaçamento extra entre diferentes modelos
                     aoa.push(new Array(101).fill(""));
                     rowIndex++;
                 }
@@ -301,7 +322,6 @@
                 const ws = XLSX.utils.aoa_to_sheet(aoa);
                 ws['!merges'] = merges;
                 
-                // Configura as larguras das colunas: A 1ª larga para o nome, as restantes muito fininhas para servir de base ao gráfico
                 const cols = [{ wch: 15 }];
                 for(let i=0; i<100; i++) {
                     cols.push({ wch: 1.5 });
@@ -311,7 +331,9 @@
                 XLSX.utils.book_append_sheet(wb, ws, "Plano Gráfico");
 
                 const dateAtual = new Date().toISOString().split('T')[0];
-                XLSX.writeFile(wb, `Plano_Cortes_Grafico_${dateAtual}.xlsx`);
+                // Remove espaços e caracteres especiais para o nome do ficheiro
+                const safeFileName = displayPlanName.replace(/[^a-z0-9]/gi, '_');
+                XLSX.writeFile(wb, `${safeFileName}_${dateAtual}.xlsx`);
             };
 
             const stats = useMemo(() => {
@@ -336,15 +358,28 @@
                                 <div className="bg-slate-800 rounded-2xl shadow-md border border-slate-700 p-5">
                                     <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-slate-100">
                                         <Icon name="settings-2" className="w-5 h-5 text-slate-400" />
-                                        Configuração
+                                        Configuração do Plano
                                     </h2>
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-1">Tamanho da Barra (mm)</label>
+                                            <label className="block text-sm font-medium text-slate-400 mb-1 flex items-center gap-1">
+                                                <Icon name="file-text" className="w-3.5 h-3.5" />
+                                                Nome do Plano / Projeto
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                value={planName} 
+                                                onChange={(e) => setPlanName(e.target.value)} 
+                                                placeholder="Ex: Obra Hospitalar" 
+                                                className="w-full p-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-100 font-medium" 
+                                            />
+                                        </div>
+                                        <div className="pt-2 border-t border-slate-700">
+                                            <label className="block text-sm font-medium text-slate-400 mb-1">Tamanho da Barra Padrão (mm)</label>
                                             <input type="number" value={standardLength} onChange={(e) => { setStandardLength(Number(e.target.value)); setResults(null); }} className="w-full p-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-100" />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-1">Espessura Lâmina (mm)</label>
+                                            <label className="block text-sm font-medium text-slate-400 mb-1">Espessura Lâmina de Corte (mm)</label>
                                             <input type="number" min="0" step="0.1" value={bladeWidth} onChange={(e) => { setBladeWidth(Number(e.target.value)); setResults(null); }} className="w-full p-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-100" />
                                         </div>
                                     </div>
@@ -419,11 +454,15 @@
                                 ) : (
                                     <div className="space-y-6">
                                         
-                                        {/* Botão de Exportar para Excel Grafico */}
-                                        <div className="flex justify-end mb-2">
+                                        {/* Cabeçalho Resultados e Botão Exportar */}
+                                        <div className="flex justify-between items-center bg-slate-800 p-4 rounded-2xl shadow-md border border-slate-700">
+                                            <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
+                                                <Icon name="file-text" className="w-5 h-5 text-blue-500" />
+                                                {planName || 'Plano de Corte'}
+                                            </h2>
                                             <button 
                                                 onClick={exportToExcelGraphic} 
-                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
                                             >
                                                 <Icon name="excel" className="w-5 h-5" />
                                                 Exportar
@@ -446,10 +485,6 @@
                                         </div>
 
                                         <div className="bg-slate-800 rounded-2xl shadow-md border border-slate-700 overflow-hidden">
-                                            <div className="p-5 border-b border-slate-700 bg-slate-800/50">
-                                                <h2 className="text-lg font-semibold text-slate-100">Plano de Corte</h2>
-                                            </div>
-                                            
                                             <div className="p-5 space-y-8">
                                                 {Object.entries(
                                                     results.reduce((acc, bin) => {
