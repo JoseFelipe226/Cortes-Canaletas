@@ -44,7 +44,8 @@
             'refresh-cw': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>,
             'scissors': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>,
             'excel': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>,
-            'file-text': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            'file-text': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>,
+            'external-link': (className) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         };
 
         const Icon = ({ name, className }) => {
@@ -87,12 +88,12 @@
                 return saved ? JSON.parse(saved) : null;
             });
 
-            // Estado dos inputs (não precisam de ser guardados)
+            // Estado dos inputs
             const [currentProfile, setCurrentProfile] = useState(FIXED_PROFILES[0]);
             const [currentLength, setCurrentLength] = useState('');
             const [error, setError] = useState('');
 
-            // Salvar automaticamente sempre que os dados mudarem
+            // Salvar automaticamente
             useEffect(() => {
                 localStorage.setItem('opt_planName', planName);
             }, [planName]);
@@ -117,7 +118,6 @@
                 }
             }, [results]);
 
-
             const handleAddCut = (e) => {
                 e.preventDefault();
                 setError('');
@@ -138,7 +138,7 @@
                 const newItem = {
                     id: Math.random().toString(36).substr(2, 9),
                     length,
-                    quantity: 1, // Fixado em 1 por cada adição
+                    quantity: 1, 
                     profile: profileName
                 };
 
@@ -212,11 +212,9 @@
                 const merges = [];
                 let rowIndex = 0;
 
-                // Cores dos cortes no Excel
                 const cutColors = ["2563EB", "4F46E5", "0891B2", "0284C7"];
                 const wasteColor = "E2E8F0"; 
                 
-                // Cabeçalho Principal (Nome do Plano)
                 const displayPlanName = planName.trim() || "Plano de Corte";
                 aoa.push([{ 
                     v: displayPlanName, 
@@ -229,7 +227,6 @@
                 merges.push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 100 } });
                 rowIndex++;
                 
-                // Linha vazia
                 aoa.push(new Array(101).fill(""));
                 rowIndex++;
 
@@ -240,7 +237,6 @@
                 }, {});
 
                 for (const [profile, bins] of Object.entries(grouped)) {
-                    // Título do Perfil
                     aoa.push([{ 
                         v: `Modelo: ${profile} (${bins.length} barras)`, 
                         s: { font: { bold: true, sz: 14, color: { rgb: "1E293B" } }, fill: { fgColor: { rgb: "F1F5F9" } }, alignment: { vertical: "center" } } 
@@ -331,7 +327,6 @@
                 XLSX.utils.book_append_sheet(wb, ws, "Plano Gráfico");
 
                 const dateAtual = new Date().toISOString().split('T')[0];
-                // Remove espaços e caracteres especiais para o nome do ficheiro
                 const safeFileName = displayPlanName.replace(/[^a-z0-9]/gi, '_');
                 XLSX.writeFile(wb, `${safeFileName}_${dateAtual}.xlsx`);
             };
@@ -349,6 +344,27 @@
             return (
                 <div className="min-h-screen bg-slate-900 p-4 md:p-8 font-sans text-slate-200">
                     <div className="max-w-5xl mx-auto">
+                        
+                        {/* Cabeçalho Superior */}
+                        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-md border border-slate-700 gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-inner">
+                                    <Icon name="scissors" className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-slate-100 leading-tight">Otimizador de Cortes</h1>
+                                    <p className="text-xs text-slate-400">Sistema de cálculo e plano de corte</p>
+                                </div>
+                            </div>
+                            <a 
+                                href="dados.html" 
+                                className="bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors border border-slate-600 w-full sm:w-auto justify-center"
+                            >
+                                Dados
+                                <Icon name="external-link" className="w-4 h-4" />
+                            </a>
+                        </div>
+
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             
                             {/* Painel Esquerdo */}
